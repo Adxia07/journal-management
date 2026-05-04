@@ -1,0 +1,90 @@
+# .gitignore для проекта Journal Management
+
+# Visual Studio и Code
+.vs/
+.vscode/
+*.sln.iml
+*.swp
+*.swo
+*~
+
+# Build результаты
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.so
+*.dylib
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+.dotnet/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Testing
+TestResults/
+*.trx
+coverage/
+
+# IDE
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Docker
+.docker/
+
+# Временные файлы
+*.tmp
+*.bak
+*.swp
+
+# Database files
+*.db
+*.sqlite
+
+# API logs
+api-requests.log
+
+# Grafana volumes (эти данные генерируются)
+grafana-data/
+postgres-data/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE plugins
+plugins/
+
+# Miscellaneous
+.thumbs.db
+node_modules/
+dist/
