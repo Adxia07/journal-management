@@ -1,0 +1,33 @@
+# prometheus.yml — конфигурация системы сбора метрик
+# Prometheus работает по pull-модели: он сам опрашивает приложения
+
+global:
+  # Как часто Prometheus собирает метрики со всех целей
+  scrape_interval: 15s
+  # Как часто пересчитываются правила алертинга
+  evaluation_interval: 15s
+
+# Список целей для сбора метрик
+scrape_configs:
+
+  # ======================================================
+  # Метрики самого Prometheus (встроено по умолчанию)
+  # ======================================================
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # ======================================================
+  # Метрики нашего ASP.NET Core API
+  # Prometheus обращается к /metrics эндпоинту каждые 15 секунд.
+  # "api:8080" — имя сервиса и порт внутри Docker-сети.
+  # Метрики предоставляются пакетом prometheus-net.AspNetCore
+  # ======================================================
+  - job_name: 'journal-api'
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['api:8080']
+        labels:
+          app: 'journal-api'
+          environment: 'production'

@@ -1,0 +1,13 @@
+apiVersion: 1
+
+providers:
+  # Grafana автоматически загружает дашборды из указанной папки при старте.
+  # Папка /var/lib/grafana/dashboards примонтирована через volume в docker-compose.yml.
+  - name: 'Journal Dashboards'
+    orgId: 1
+    folder: 'Journal Management'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 60
+    options:
+      path: /var/lib/grafana/dashboards
