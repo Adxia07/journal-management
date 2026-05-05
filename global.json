@@ -1,8 +1,6 @@
-; Конфиг для dotnet
-
-[dotnet]
-version = 8.0
-
-[build]
-configuration = Release
-framework = net8.0
+{
+  "sdk": {
+    "version": "8.0.0",
+    "rollForward": "latestFeature"
+  }
+}
