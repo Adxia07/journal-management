@@ -1,265 +1,141 @@
 # Journal Management System
 
-Production-ready система управления редакцией журнала на базе современного стека технологий.
+## О проекте
 
-## 📋 Описание
+**Journal Management System** — это полнофункциональная production-ready система для управления редакцией научного журнала. Разработана в рамках лабораторной работы по дисциплине «Современные серверные стеки».
+---
 
-Полнофункциональная система для управления статьями, авторами, редакторами и выпусками научного журнала. Реализована на ASP.NET Core с использованием PostgreSQL, Redis, Nginx, Prometheus и Grafana.
+## Функции
 
-## 🏗️ Архитектура
+| Функция | Описание |
+|---------|----------|
+| Управление статьями | CRUD операции, фильтрация по автору и статусу |
+| Управление авторами | Регистрация, редактирование, удаление авторов |
+| Управление редакторами | Назначение ответственных за выпуски |
+| Управление выпусками | Формирование номеров журнала |
+---
 
-### Компоненты системы:
+## Автор
 
-- **ASP.NET Core Web API** — REST API с CRUD операциями
-- **PostgreSQL** — реляционная база данных с миграциями EF Core
-- **Redis** — кэширование часто запрашиваемых данных
-- **Nginx** — обратный прокси и балансировка нагрузки
-- **Prometheus** — сбор метрик приложения
-- **Grafana** — визуализация метрик в дашбордах
-- **C# Console Client** — клиент с демонстрацией делегатов и событий
+Автор может создавать, редактировать и удалять свои статьи (пока они в статусе «Черновик»). Может отправлять статьи на рецензирование и отслеживать их статус.
 
-### Сущности:
+| Метод | Эндпоинт | Что делает |
+|-------|----------|------------|
+| GET | `/api/authors` | Список всех авторов (кэш Redis, TTL 5 мин) |
+| GET | `/api/authors/{id}` | Автор по ID (кэш Redis) |
+| POST | `/api/authors` | Создать автора |
+| PUT | `/api/authors/{id}` | Обновить автора |
+| DELETE | `/api/authors/{id}` | Удалить автора (только если нет статей) |
 
-1. **Author** — авторы статей
-   - FirstName, LastName, Email, Bio
-   
-2. **Article** — статьи журнала
-   - Title, Content, Keywords, Status, AuthorId, EditorId, IssueId
-   - Статусы: Draft, Submitted, UnderReview, Accepted, Rejected, Published
+<img width="1920" height="913" alt="Снимок экрана (146)" src="https://github.com/user-attachments/assets/813ddcd3-6c96-45dd-9181-f2491d615893" />
 
-3. **Editor** — редакторы и редакционный совет
-   - FirstName, LastName, Email, Specialization
+---
 
-4. **Issue** — выпуски журнала
-   - Title, Number, Year, PublishedAt, EditorId
+## Редактор
+Редактор может просматривать все статьи, менять их статусы , назначать статьи в выпуски, управлять выпусками и редакционной коллегией.
 
-## 🚀 Быстрый старт
+| Метод | Эндпоинт | Что делает |
+|-------|----------|------------|
+| GET | `/api/editors` | Список всех редакторов (кэш Redis) |
+| GET | `/api/editors/{id}` | Редактор по ID (кэш Redis) |
+| POST | `/api/editors` | Создать редактора |
+| PUT | `/api/editors/{id}` | Обновить редактора |
+| DELETE | `/api/editors/{id}` | Удалить редактора (только если нет статей и выпусков) |
 
-### Требования:
-- Docker & Docker Compose
-- .NET SDK 8.0+
-- Git
+<img width="1920" height="911" alt="Снимок экрана (145)" src="https://github.com/user-attachments/assets/c68b39ea-1b2e-4946-b38a-2a57533914da" />
 
-### Установка и запуск:
+---
 
-```bash
-# Клонирование репозитория
-git clone https://github.com/Adxia07/journal-management.git
-cd journal-management
+## Статьи
 
-# Запуск всех компонентов в Docker
-docker compose up -d
+| Метод | Эндпоинт | Что делает |
+|-------|----------|------------|
+| GET | `/api/articles` | Список статей (с автором, редактором, выпуском) |
+| GET | `/api/articles/{id}` | Статья по ID |
+| GET | `/api/articles/by-author/{authorId}` | Статьи конкретного автора |
+| GET | `/api/articles/by-status/{status}` | Фильтр по статусу |
+| POST | `/api/articles` | Создать статью (статус Draft) |
+| PUT | `/api/articles/{id}` | Обновить статью |
+| DELETE | `/api/articles/{id}` | Удалить статью |
 
-# Проверка статуса
-docker compose ps
-```
+<img width="1920" height="904" alt="Снимок экрана (148)" src="https://github.com/user-attachments/assets/094c859d-0959-4ca1-8a91-4e1a6bef255d" />
 
-### Доступ к компонентам:
+---
+## Доступ к сайтам
 
-- **API Swagger** — http://localhost/swagger
-- **Prometheus** — http://localhost:9090
-- **Grafana** — http://localhost:3000 (admin/admin)
-- **PostgreSQL** — localhost:5432
-- **Redis** — localhost:6379
+| Сервис | URL | Логин | Пароль |
+|---------|----|--------|--------|
+| Swagger UI | http://localhost:8080/swagger | - | - |
+| Grafana |  http://localhost:3000 | admin | admin |
+| Prometheus | 	http://localhost:9090  | - | - |
+---
+## Архитектура
 
-## 📡 REST API Эндпоинты
+<img width="546" height="590" alt="image" src="https://github.com/user-attachments/assets/6a2bfb38-6caf-4bc3-836a-245a8a88c7ca" />
 
-### Authors (Авторы)
-```
-GET    /api/authors              # Список всех авторов
-GET    /api/authors/{id}         # Автор по ID
-POST   /api/authors              # Создать автора
-PUT    /api/authors/{id}         # Обновить автора
-DELETE /api/authors/{id}         # Удалить автора
-```
+---
 
-### Articles (Статьи)
-```
-GET    /api/articles             # Список всех статей (кэшируется)
-GET    /api/articles/{id}        # Статья по ID (кэшируется)
-GET    /api/articles/by-author/{authorId}
-GET    /api/articles/by-status/{status}
-POST   /api/articles             # Создать статью
-PUT    /api/articles/{id}        # Обновить статью
-DELETE /api/articles/{id}        # Удалить статью
-```
+### Требования
 
-### Editors (Редакторы)
-```
-GET    /api/editors              # Список редакторов
-GET    /api/editors/{id}         # Редактор по ID
-POST   /api/editors              # Создать редактора
-PUT    /api/editors/{id}         # Обновить редактора
-DELETE /api/editors/{id}         # Удалить редактора
-```
+| Требование | Версия |
+|------------|--------|
+| Docker Desktop | 20.10+ |
+| .NET SDK | 8.0+ |
+| Git | любая |
+| Prometheus |	latest |
+| Grafana |	latest |
+| Docker Compose |	3.8 |
 
-### Issues (Выпуски)
-```
-GET    /api/issues               # Список выпусков
-GET    /api/issues/{id}          # Выпуск по ID
-POST   /api/issues               # Создать выпуск
-PUT    /api/issues/{id}          # Обновить выпуск
-DELETE /api/issues/{id}          # Удалить выпуск
-```
+## Запуск
+Шаг 1. Скачайте репозиторий
 
-## 🔧 Кэширование
+Откройте терминал и выполните команду: git clone https://github.com/Adxia07/journal-management.git
 
-Redis используется для кэширования:
-- `GET /api/articles` — все статьи (TTL: 5 минут)
-- `GET /api/articles/{id}` — одна статья (TTL: 5 минут)
+Затем перейдите в папку проекта: cd journal-management
 
-Кэш инвалидируется при создании, обновлении или удалении статьи.
+Шаг 2. Запустите все сервисы через Docker
 
-## 📊 Мониторинг
+Выполните команду: docker compose up --build
 
-### Grafana Dashboard
+Docker скачает нужные образы, соберёт проект и запустит все шесть контейнеров: API, PostgreSQL, Redis, Nginx, Prometheus и Grafana.
 
-Дашборд включает следующие панели:
-- HTTP Requests Rate (запросы/сек по типам)
-- Request Latency (p95, p99 percentile)
-- HTTP Status Distribution (2xx/4xx/5xx)
-- Error Rate gauge (5xx ошибки)
-- Requests by Endpoint
-- Total Requests Count
-- Total Requests gauge
-- Memory Usage
+Шаг 3. Откройте нужные сервисы в браузере
 
-### Prometheus Метрики
+Документация API (Swagger) доступна по адресу: http://localhost:8080/swagger
 
-Приложение предоставляет метрики через `/metrics`:
-- `http_requests_received_total` — счётчик запросов
-- `http_request_duration_seconds_bucket` — latency гистограмма
+Графана для мониторинга: http://localhost:3000 — логин admin, пароль admin
 
-## 💻 C# Console Client
+Прометеус для метрик: http://localhost:9090
 
-Консольное приложение демонстрирует применение делегатов в C#:
+Шаг 4. Запустите консольный клиент
 
-```bash
-cd JournalClient
-dotnet run
-```
+Откройте второй терминал, перейдите в папку клиента: cd JournalClient
 
-### Демонстрируемые концепции:
+Выполните: dotnet run
 
-- **Собственные делегаты**: `OnRequestCompleted`, `OnRequestError`
-- **EventHandler<TEventArgs>**: современный способ работы с событиями
-- **Action<T>**: void-делегаты для callback'ов
-- **Func<T, TResult>**: делегаты с возвратом значения
-- **Многоадресные делегаты**: несколько обработчиков на одно событие
-- **Динамическая подписка**: операторы `+=` и `-=`
+Клиент автоматически выполнит семь операций с API и покажет работу делегатов и событий.
 
-Клиент выполняет 7 операций:
-1. GET авторов
-2. POST создание автора (событие OnEntityCreated)
-3. GET автора по ID (Func-делегат)
-4. POST создание статьи (событие OnEntityCreated)
-5. PUT обновление статьи (после отписки fileLogHandler)
-6. DELETE удаление статьи (событие OnEntityDeleted)
-7. DELETE удаление автора (событие OnEntityDeleted)
+Шаг 5. Остановите проект
 
-## 🧪 Тестирование
+В терминале с Docker нажмите Ctrl + C, затем выполните: docker compose down
 
-```bash
-# Запуск всех тестов
-dotnet test
+## Технологический стек
+| Технология | Версия | Назначение |
+|-----------|---------|-----------|
+| C#/.NET | 8.0 | Основной язык и платформа |
+| ASP.NET core | 8.0 | Создание REST API |
+| Entity Framework Core | 8.0 | Работа с базой данных |
+| PostgreSQL | 16 | Реляционная база данных |
+| Redis | 7 | Кэширование данных |
+| Ngnix | Alphine | Обратный прокси |
+| Prometheus | latest | Сбор метрик |
+| Grafana | latest | Сбор метрик |
+| Docker | 20.10+ | Контейнеризация |
+| Docker Compose | 3.8 | Оркестрация конейнеров |
+| GitHub Actions | - | CI/CD пайплайн |
+| xUnit | latest | Юнит-тестирование |
 
-# Или конкретно тесты API
-dotnet test JournalApi.Tests
-```
-
-Включены 6 тестов для проверки:
-- CRUD операций с Author
-- Связей между сущностями
-- Статусов статей
-- Подсчёта записей
-
-## 🔄 CI/CD Pipeline
-
-GitHub Actions автоматически:
-1. Восстанавливает зависимости (`dotnet restore`)
-2. Собирает проект (`dotnet build`)
-3. Запускает тесты (`dotnet test`)
-4. Собирает Docker образы
-
-Статус pipeline видно в разделе Actions на GitHub.
-
-## 📁 Структура проекта
-
-```
-journal-management/
-├── .github/workflows/
-│   └── ci.yml                          # GitHub Actions pipeline
-├── JournalApi/
-│   ├── Controllers/
-│   │   ├── ArticlesController.cs       # CRUD для статей
-│   │   ├── AuthorsController.cs        # CRUD для авторов
-│   │   ├── EditorsController.cs        # CRUD для редакторов
-│   │   └── IssuesController.cs         # CRUD для выпусков
-│   ├── Models/
-│   │   ├── Entities.cs                 # Классы сущностей
-│   │   └── Dtos.cs                     # DTO для API
-│   ├── Data/
-│   │   ├── JournalDbContext.cs         # DbContext
-│   │   └── DbSeeder.cs                 # Инициализация данных
-│   ├── Services/
-│   │   └── CacheService.cs             # Обёртка Redis
-│   ├── Dockerfile                      # Многоступенчатая сборка
-│   ├── Program.cs                      # Конфигурация приложения
-│   └── JournalApi.csproj
-├── JournalApi.Tests/
-│   ├── DbContextTests.cs               # Тесты
-│   └── JournalApi.Tests.csproj
-├── JournalClient/
-│   ├── Program.cs                      # Main клиента
-│   ├── ApiService.cs                   # HTTP клиент
-│   ├── Events.cs                       # EventHandler система
-│   └── JournalClient.csproj
-├── JournalManagement.Web/              # Web интерфейс (отдельно)
-├── nginx/
-│   └── nginx.conf                      # Конфиг обратного прокси
-├── prometheus/
-│   └── prometheus.yml                  # Конфиг сбора метрик
-├── grafana/
-│   ├── dashboards/
-│   │   └── journal-api-dashboard.json  # Дашборд JSON
-│   └── provisioning/
-│       ├── dashboards.yml
-│       └── datasources/
-│           └── prometheus.yml
-├── docker-compose.yml                  # Оркестрация контейнеров
-├── DOCUMENTATION.md                    # Подробная документация
-└── README.md                           # Этот файл
-```
-
-## 🛠️ Используемые технологии
-
-- **Backend**: C#, ASP.NET Core 8.0
-- **Database**: PostgreSQL 16
-- **Cache**: Redis 7
-- **Proxy**: Nginx
-- **Monitoring**: Prometheus, Grafana
-- **Testing**: xUnit
-- **Containerization**: Docker, Docker Compose
-- **CI/CD**: GitHub Actions
-
-## 📝 Требования к коду
-
-- .NET SDK 8.0 или выше
-- Docker & Docker Compose
-- Git для версионирования
-
-## 🤝 Авторы
-
-- Разработано как лабораторная работа по дисциплине "Современные серверные стеки"
-
-## 📄 Лицензия
-
-MIT
-
-## 📞 Поддержка
-
-В случае возникновения проблем проверьте:
-1. Установлен ли Docker Desktop
-2. Свободны ли порты 80, 3000, 9090, 5432, 6379
-3. Достаточно ли места на диске для образов
-4. Содержит ли `.env` корректные значения переменных окружения
+---
+## Автор
+| Субботин А.Д. |  @Adxia07 |
+|---|----|
