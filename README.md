@@ -2,7 +2,7 @@
 
 ## О проекте
 
-**Journal Management System** — это полнофункциональная production-ready система для управления редакцией журнала.
+Система управления редакцией журнала — production-ready приложение на основе микросервисной архитектуры с REST API, веб-интерфейсом, кэшированием, мониторингом и CI/CD.
 ---
 
 ## Функции
@@ -70,8 +70,7 @@
 | Prometheus | 	http://localhost:9090  | - | - |
 ---
 ## Архитектура
-
-<img width="546" height="590" alt="image" src="https://github.com/user-attachments/assets/6a2bfb38-6caf-4bc3-836a-245a8a88c7ca" />
+<img width="658" height="608" alt="image" src="https://github.com/user-attachments/assets/df4d309a-d73b-453e-840c-680ec2120a33" />
 
 ---
 
